@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application xmlns="http://ns.adobe.com/air/application/1.0">
+    <id>com.dellin.ctims.client</id>
+    <version>1.0</version>
+    <filename>cti-operator-client</filename>
+    <initialWindow>
+        <content>index.html</content>
+        <visible>true</visible>
+        <width>231</width>
+        <height>347</height>
+        <maximizable>false</maximizable>
+        <resizable>false</resizable>
+        <!--<alwaysInFront>true</alwaysInFront> Doesnt work -_- -->
+    </initialWindow>
+    <icon>
+	    <image16x16>img/phone_logo.png</image16x16>
+	    <image32x32>img/phone_logo.png</image32x32>
+	    <image128x128>img/phone_logo.png</image128x128>
+	</icon>
+</application>

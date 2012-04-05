@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <script type="text/javascript" src="js/AIRAliases.js"></script>
+        <script type="text/javascript" src="js/jquery.js"></script>
+        <script type="text/javascript" src="js/state.js"></script>
+        <script type="text/javascript" src="js/connection.js"></script>
+        <script type="text/javascript" src="js/packetmanager.js"></script>
+        <script type="text/javascript" src="js/packets.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css"/>
+        <!--<link rel="stylesheet" type="text/css" href="air.css"/>-->
+<title>Mobile secretary</title>
+<style>
+html, body {margin: 0px; padding: 0px;}
+#main, #options {
+  margin: 5px 30px 40px 30px; 
+  width: 169px; height: 272px;
+}
+#main section, #options section {
+  margin-bottom: 9px;
+}
+.options_label{
+  color: #666;
+}
+.options_label i {
+  margin-right: 2px;
+}
+ .options_label:hover{
+  text-decoration:none;
+ }
+.options_label span{
+  text-decoration: underline;
+}
+#state a{
+  width: 151px; text-align:left;
+}
+#state a i{
+  margin-right: 4px;
+}
+#dial_num input{
+  width: 127px;
+}
+#numpad table td a{
+  width: 27px; font-weight: bold;
+}
+#numpad table td:first-child{
+  padding-left: 0;
+}
+#numpad table td{
+  padding: 5px;
+}
+#content {
+  position: relative;
+}
+#message-up {
+  position: absolute;
+  left:0; top: 5px;
+  width: 169px; height: 175px;
+  background-color: rgba(100,100,100, 0.9);
+}
+#message-up div.alert{
+  margin-top: -5px;
+}
+#intalk div.alert{
+  margin-bottom: 9px;
+}
+#options input {
+  width: 161px;
+}
+#clear_call {
+  display:block;
+}
+</style>
+</head>
+
+<body><div id="main"> <!-- Main screen -->
+  <section>
+  <a href="#" class="options_label" onclick="ui.showOptionsScreen()"><i class="icon-cog"></i><span>Bsalmanov/56704</span></a>
+  </section><section>
+                            <div class="btn-group" id="state">
+                              <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="icon-off"></i><span class="ilabel">Не в сети</span>
+                                <span class="caret pull-right"></span>
+                              </a>
+                              <ul class="dropdown-menu">
+                                <li><a href="#" id="state_online" title="Connect"><i class="icon-ok-circle"></i> Online</a></li>
+                                <li><a href="#" id="state_online" title="Connect"><i class="icon-time"></i> Busy</a></li>
+                                <li class="divider"></li>
+                                <li class="active"><a href="#" id="state_online" title="Connect"><i class="icon-off"></i> Offline</a></li>
+                              </ul>
+
+                            </div>
+  </section>
+  <div id="content">
+  <!-- Call number area -->
+  <section class="form-horizontal" id="dialinput">
+    <div class="input-append" id="dial_num">
+      <input>
+      <span class="add-on"><i class="icon-headphones"></i></span>
+    </div>
+  </section>
+  <!-- END Call number area -->
+  <!-- Numpad section -->
+  <section id="numpad">
+    <table>
+      <tbody>
+        <tr>
+          <td>
+            <a href="#" class="btn num1">1</a>
+          </td>
+          <td>
+            <a href="#" class="btn num2">2</a>
+          </td>
+          <td>
+            <a href="#" class="btn num3">3</a>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <a href="#" class="btn num4">4</a>
+          </td>
+          <td>
+            <a href="#" class="btn num5">5</a>
+          </td>
+          <td>
+            <a href="#" class="btn num6">6</a>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <a href="#" class="btn num7">7</a>
+          </td>
+          <td>
+            <a href="#" class="btn num8">8</a>
+          </td>
+          <td>
+            <a href="#" class="btn num9">9</a>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <a href="#" class="btn">*</a>
+          </td>
+          <td>
+            <a href="#" class="btn num0">0</a>
+          </td>
+          <td>
+            <a href="#" class="btn">#</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+  <!-- END numpad section -->
+  <!-- Message up -->
+  <section id="message-up" class="hide">
+    <div class="alert">
+      <a class="close">&times;</a>
+      <p>Some error happend on server..</p>
+    </div>
+  </section>
+  <!-- END Message up-->
+  <!-- Incomming or current call -->
+  <section id="intalk" class="hide">
+    <div class="alert alert-info">Talk with <code>Alexandr Ivanovich</code></div>
+    <a class="btn" id="clear_call" class="hide">stop call</a>
+  </section>
+  <!-- END Incomming or current call -->
+  </div> <!-- #content end-->
+</div> <!-- #Main end -->
+<div id="options" class="hide"> <!-- Options screen -->
+  <form>
+    <section>
+      <label>Login</label>
+      <input value="bsalmanov" id="cil_login">
+    </section>
+    <section>
+      <label>Password</label>
+      <input value="123654" type="password"  id="cil_password">
+    </section>
+    <section>
+      <label>Instrument</label>
+      <input value="56704" id="cil_instrument">
+    </section>
+    <section>
+      <a href="#" class="btn" style="display:block;" onclick="ui.showMainScreen()">&laquo; Back</a>
+    </section>
+  </form>
+</div> <!-- #options end-->
+</body>
+</html>
