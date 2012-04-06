@@ -1,0 +1,1 @@
+g:\airsdk\bin\adt.bat  -package -storetype pkcs1 -keystore plan.pfx -storepass sample -tsa none ms.air application.xml ./*
