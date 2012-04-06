@@ -24,7 +24,7 @@ var result = {
         , exceptionCaught : false
 }
 
-cil_protocol.availablePackets[1] = function(){
+var HelloPacket = cil_protocol.addPacketPrototype(1, function(){
         return {
                 getId : function(){ return 1}
                 , getName: function(){ return "Hello"}
@@ -33,12 +33,12 @@ cil_protocol.availablePackets[1] = function(){
                         Trace("Hello received")
                 }
         }
-}
+})
 
 var c = new Connect( { host: '127.0.0.1', port: 32562}, [{
         channelConnected : function(ctx){
                 Trace("Connect")
-                ctx.getChannel().write( new cil_protocol.availablePackets[1] )
+                ctx.getChannel().write( new HelloPacket() )
         }
         , channelDisconnected: function(ctx){
                 for (var k in result )
