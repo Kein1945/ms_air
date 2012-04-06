@@ -8,7 +8,8 @@
         <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css"/>
   <!-- END Framework -->
         <script type="text/javascript" src="js/util.js"></script>
-        <script type="text/javascript" src="js/cil.protocol.js"></script>
+        <script type="text/javascript" src="js/cil/protocol.js"></script>
+        <script type="text/javascript" src="js/cil/packets.js"></script>
         <script type="text/javascript" src="js/connection.js"></script>
   
         <link rel="stylesheet" type="text/css" href="style.css"/>
@@ -23,49 +24,6 @@ var result = {
         , messageReceived : false
         , exceptionCaught : false
 }
-
-var HelloPacket = cil_protocol.addPacketPrototype(1, cil_protocol.makePacketPrototype(1, "Hello", {
-                send: function(c) { c.write(1) }
-                , get: function(c) {
-                        Trace("Hello received")
-                }
-        })
-)
-
-var AuthorizePacket = cil_protocol.addPacketPrototype(4, cil_protocol.makePacketPrototype( 4, 'Authorize', {
-
-                setLogin: function(login){ this.login = login }
-                ,setPassword : function(password){ this.password = password }
-                ,setInstrument : function(instrument){ this.instrument = instrument }
-                ,setExtension : function(extension){ this.extension = extension }
-                ,send : function(channel){
-                        
-                        if( this.login.length && this.password.length && this.instrument.length && this.extension ){
-                                channel.write( this.login )
-                                channel.write( this.password )
-                                channel.write( this.instrument )
-                                channel.write( this.extension )
-                        } else {
-                                Trace("Authorize packet required set login, password, instrument, extension")
-                        }
-                }
-                ,get : function(channel){
-                        // for (var i in channel){
-                        //         if( this.hasOwnProperty(i) )
-                        //                 air.trace(i+' is '+ channel[i] + '['+typeof(channel[i])+']')
-                        // }
-                        this.code = channel.readInt()
-                        this.message = channel.readString()
-                }
-                , getInfo: function(){
-                        return this.getLabel() + (
-                                                'undefined'==typeof(this.code)
-                                                        ?(this.login+':'+this.password+'@'+this.instrument+'/'+this.extension)
-                                                        :(' ['+ this.message + '/' + this.code+']')
-                                        )
-                }
-        })
-        )
 
 var c = new Connect( { host: '127.0.0.1', port: 32562}, [{
         channelConnected : function(ctx){
