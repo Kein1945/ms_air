@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Framework -->
+        <script type="text/javascript" src="js/AIRAliases.js"></script>
+        <script type="text/javascript" src="js/jquery.js"></script>
+        <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css"/>
+  <!-- END Framework -->
+        <script type="text/javascript" src="js/util.js"></script>
+        <script type="text/javascript" src="js/cil.protocol.js"></script>
+        <script type="text/javascript" src="js/connection.js"></script>
+  
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+<title>Mobile secretary</title>
+<!-- this is stable version -->
+</head>
+
+<body>
+<script>
+var result = {
+        connect : false
+        , messageReceived : false
+        , exceptionCaught : false
+}
+var c = new Connect( { host: '127.0.0.1', port: 32562}, [{
+        channelConnected : function(ctx){
+                Trace("Connect")
+                ctx.getChannel().write( {
+                        getId: function(){ return 1}
+                        , send: function(c) { c.write(1) }
+                        , get: function(c) {  }
+                } )
+        }
+        , channelDisconnected: function(ctx){
+                for (var k in result )
+                        Trace( k+ " : "+result[k])
+        }
+        , messageReceived : function(packet, ctx){ result.messageReceived = true }
+        , exceptionCaught: function(e){
+                throw e
+        }
+
+} , 
+new cil_protocol.encoder()
+])
+c.connect()
+</script>
+</body>
+</html>
