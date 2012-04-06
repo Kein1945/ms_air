@@ -10,15 +10,23 @@ var cil_protocol = {
 	}
 	, decoder: function(){
 		this.decode = function(channel){
-			// read
-			// return packet
+			var id = channel.readInt()
+			for(var index in cil_protocol.availablePackets){
+				if( index == id ){
+					var packet = new cil_protocol.availablePackets[index]()
+					packet.get(channel)
+					return packet
+				}
+			}
+			throw "Failed to encode packet with id "+id
+			return false
 		}
 	}
 	, packetInterface : {
-		getId : function(){
-			return 1
-		}
+		getId : function(){}
+		, getName: function(){}
 		, send : function(channel){}
 		, get : function(channel){}
 	}
+	, availablePackets : []
 }

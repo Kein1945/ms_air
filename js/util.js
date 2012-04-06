@@ -17,7 +17,7 @@ var objectOrientedList = function( elements ){
 	this.eachHandler = function(type, callback){
 		var found = false
 		for(var k in elements)
-			if(  CLASS.instanceOf( elements[k], type) {// object instance of interface
+			if(  CLASS.instanceOf( elements[k], type) ) {// object instance of interface
 				found = true
 				if( !callback.call( this, elements[k]) )// breakChain
 					return found

@@ -23,26 +23,38 @@ var result = {
         , messageReceived : false
         , exceptionCaught : false
 }
+
+cil_protocol.availablePackets[1] = function(){
+        return {
+                getId : function(){ return 1}
+                , getName: function(){ return "Hello"}
+                , send: function(c) { c.write(1) }
+                , get: function(c) {
+                        Trace("Hello received")
+                }
+        }
+}
+
 var c = new Connect( { host: '127.0.0.1', port: 32562}, [{
         channelConnected : function(ctx){
                 Trace("Connect")
-                ctx.getChannel().write( {
-                        getId: function(){ return 1}
-                        , send: function(c) { c.write(1) }
-                        , get: function(c) {  }
-                } )
+                ctx.getChannel().write( new cil_protocol.availablePackets[1] )
         }
         , channelDisconnected: function(ctx){
                 for (var k in result )
                         Trace( k+ " : "+result[k])
         }
-        , messageReceived : function(packet, ctx){ result.messageReceived = true }
+        , messageReceived : function(packet, ctx){
+                if( packet.getName() == "Hello" )
+                        Trace("Hello from server, master")
+        }
         , exceptionCaught: function(e){
                 throw e
         }
 
 } , 
-new cil_protocol.encoder()
+new cil_protocol.encoder() , 
+new cil_protocol.decoder()
 ])
 c.connect()
 </script>

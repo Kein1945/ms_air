@@ -29,7 +29,7 @@ var packetManager = (function(){
 		}
 	})()
 
-createPacket = function(id, packetName, methods){
+var createPacket = function(id, packetName, methods){
 	var packetPrototype = function(){}
 	packetPrototype.prototype.getName = function(){ return packetName }
 	packetPrototype.prototype.getId = function(){ return id }

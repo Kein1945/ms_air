@@ -3,7 +3,7 @@ var ConnectHandlers = {
 		encode: function(data, channel){}
 	}
 	, decoderInterface : {
-		decode: function(channel){}
+		decode: function(channel){} // return data packet
 	}
 	, handlerInterface : {
 		channelConnected : function(ctx){}
@@ -106,9 +106,13 @@ var Channel = function(socket, handlers){
 	}
 	this.decode = function(){ // Decode socket received data
 		var decodedData = null
+			, decoded = false
 		handlers.eachHandler.call( this, ConnectHandlers.decoderInterface, function(decoder){
+			decoded = true
 			decodedData = decoder.decode( this.rs() )
 		})
+		if(!decoded)
+			throw "Decoders not found in handlers pull"
 		return decodedData
 	}
 }
@@ -134,7 +138,11 @@ Channel.prototype = {
 		this.writeInt(data.length)
 		this.rs().writeUTFBytes( data )
 	}
-	, read : function(){
-
+	, readInt : function(){
+		return this.rs().readInt()
+	}
+	, readString : function(){
+		var messageLength = this.rs().readInt()
+		return this.rs().readUTFBytes( messageLength )
 	}
 }
