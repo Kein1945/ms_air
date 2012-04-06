@@ -1,164 +1,140 @@
-// Started
-
-var Connection = function(host, port){
-	var self = this
-	this.host = host
-	this.port = port
-	this.authorized = false
-	this.hello = false
-	this.listeners = []
-	this.ON_AUTHORIZE = 1
-	this.ON_AUTHORIZE_FAIL = 2
-	this.ON_DISCONNECT = 3
-	this.ON_STATE = 4
-	this.ON_CALLBEGIN = 5
-	this.ON_WELCOME = 6
-	this.ON_WELCOME_FAIL = 7
-	this.ON_ERROR = 8
-	this.ON_WARNING = 9
-
-	this.socket = new air.Socket()
-
-	this.socket.addEventListener( air.Event.CONNECT, function(){
-		var p = new HelloPacket()
-		p.send(self.socket)
-	})
-
-	this.socket.addEventListener( air.ProgressEvent.SOCKET_DATA, function(){
-		packetManager.proceedData( self.socket, function(packet){
-			packet.setManager(self)
-			packet.get( self.socket )
-		},function(){
-			// Error
-		})
-	})
-
-	this.socket.addEventListener( air.IOErrorEvent.IO_ERROR, function(){
-		self.fireEvent(self.ON_DISCONNECT, {reason: 'Server not answer'})
-		Trace("IO error")
-	})
-
-	this.socket.addEventListener( air.OutputProgressEvent.OUTPUT_PROGRESS, function(){
-		Trace("Out")
-	})
-
-	this.socket.addEventListener( air.Event.CLOSE, function(){
-		self.fireEvent(self.ON_DISCONNECT, {reason: false})
-	})
-	this.addEventListener(this.ON_DISCONNECT, function(){
-		self.clearState()
-	})
-	//this.socket.connect()
+var ConnectHandlers = {
+	encoderInterface : {
+		encode: function(data, channel){}
+	}
+	, decoderInterface : {
+		decode: function(channel){}
+	}
+	, handlerInterface : {
+		channelConnected : function(ctx){}
+		, channelDisconnected: function(ctx){}
+		, messageReceived : function(packet, ctx){}
+		, exceptionCaught: function(e){}
+	}
 }
 
-Connection.prototype = {
-	connect : function(){
-		if( this.socket.connected ){
-			this.socket.close()
+var Connect = function(server, handlers){
+	var self = this
+		, server = server
+		, socket = null
+	this.listeners = []
+
+	this.handlers = new objectOrientedList( handlers || [] )
+	this.getSocket = function(){
+		return socket
+	}
+	this.sock = this.getSocket
+	this.flushSocket = function(){
+		if (null != socket && socket.connected)
+			socket.close()
+		socket = new air.Socket()
+	}
+	this.getPort = function(){
+		return server.port
+	}
+	this.getHost = function(){
+		return server.host
+	}
+	this.getHandlers = function(){
+		return this.handlers
+	}
+	this.channel = null
+	this.getChannel = function(){
+		return this.channel
+	}
+}
+
+Connect.prototype = {
+	isActive : function(){
+		return this.sock().connected
+	}
+	, connect: function(){
+		this.flushSocket()
+		this.channel = new Channel(this.sock(), this.handlers)
+		Trace("Chanel created")
+		this.sock().connect(this.getHost(), this.getPort())
+		this.initListeners()
+		Trace("Connect complete")
+	}
+	, close: function(){
+		this.flushSocket()
+	}
+	, initListeners : function(){
+		var connect = this
+		this.sock().addEventListener( air.Event.CONNECT, function(){
+			Trace("Connect raw connect")
+			connect.handlers.eachHandler.call( connect, ConnectHandlers.handlerInterface, function(handler){
+				Trace("Connect event")
+				handler.channelConnected( this )
+			})
+		})
+		this.sock().addEventListener( air.Event.CLOSE, function(){
+			connect.handlers.eachHandler.call( connect, ConnectHandlers.handlerInterface, function(handler){
+				handler.channelDisconnected(this)
+			} )
+		})
+		this.sock().addEventListener( air.ProgressEvent.SOCKET_DATA, function(){
+			Trace("Connect raw data")
+			connect.handlers.eachHandler.call( connect, ConnectHandlers.handlerInterface, function(handler){
+				Trace("Connect data")
+				handler.messageReceived( this.channel.decode(), this )
+			})
+		})
+		this.sock().addEventListener( air.IOErrorEvent.IO_ERROR, function(e){
+			connect.handlers.eachHandler.call( connect, ConnectHandlers.handlerInterface, function(handler){
+				handler.exceptionCaught(e)
+			})
+		})
+	}
+}
+
+
+var Channel = function(socket, handlers){
+	this.getRawSocket = function(){
+		return socket
+	}
+	this.rs = this.getRawSocket //alias
+	this.encode = function(data){ // Encode data for writing to socket
+		var encoded = false
+		handlers.eachHandler.call( this, ConnectHandlers.encoderInterface, function(encoder){
+			if( null == encoder.encode( data, this ) )
+				return !(encoded=true)
+		})
+
+		if( !encoded )
+			throw ["Undefined data for encode", data]
+	}
+	this.decode = function(){ // Decode socket received data
+		var decodedData = null
+		handlers.eachHandler.call( this, ConnectHandlers.decoderInterface, function(decoder){
+			decodedData = decoder.decode( this.rs() )
+		})
+		return decodedData
+	}
+}
+
+Channel.prototype = {
+	write : function(data){
+		switch( typeof(data) ){
+			case "number":
+				this.writeInt( data )
+				break;
+			case "string":
+				this.writeString( data )
+			default:
+				this.encode( data )
+				Trace(">> ")
 		}
-		this.socket.connect(this.host, this.port)
 	}
-	, disconnect : function(reason){
-		reason = (typeof(reason) =='undefined')?false:reason
-		if( this.socket.connected )
-			this.socket.close()
-		this.fireEvent(this.ON_DISCONNECT, {reason: reason})
+	, writeInt : function(data){
+		Trace("Write int " + data)
+		this.rs().writeInt( parseInt(data) )
 	}
-	, authorize : function(){
-		if( !this.isWelcome() ) Trace('Please hello before')
-		var AuthPacket = new AuthorizePacket();
-		
-		AuthPacket.setLogin( this.login )
-		AuthPacket.setPassword( this.password )
-		AuthPacket.setInstrument( this.instrument )
-		AuthPacket.setExtension( this.extension )
-		//AuthPacket.send( this.socket )
-		this.send( AuthPacket )
+	, writeString : function(data){
+		this.writeInt(data.length)
+		this.rs().writeUTFBytes( data )
 	}
-	, setLogin: function(login){ this.login = (login.length>0) ? login : '0' }
-	, setPassword : function(password){ this.password = (password.length>0) ? password : '0' }
-	, setInstrument : function(instrument){ this.instrument = (instrument.length>0) ? instrument : '0' }
-	, setExtension : function(extension){ this.extension = extension }
+	, read : function(){
 
-	, setHello : function(){ this.hello = true }
-	, isWelcome : function(){ return this.hello }
-	, setAuthorized : function(code){ this.authorized = (1==code) }
-	, isAuthorized : function(){
-		return this.authorized
-	}
-	, onAuthorized : function(){
-		this.fireEvent(this.ON_AUTHORIZE)
-	}
-	, onAuthorizedFail : function(msg){
-		this.fireEvent(this.ON_AUTHORIZE_FAIL, {reason: msg })
-	}
-
-	, onWelcome : function(){
-
-		this.fireEvent(this.ON_WELCOME)
-	}
-	, onConnected: function(){
-		if( this.isAuthorized() )
-			this.onAuthorized()
-		else
-			this.onAuthorizedFail( this.getError() )
-	}
-	, onDisconnected : function(reason){
-		this.fireEvent(this.ON_DISCONNECT, {reason: reason})
-	}
-	, clearState : function(){
-		this.authorized = false
-		this.hello = false
-	}
-	, setState : function(code){
-		if( !this.isAuthorized() ) {
-			Trace('Must be authorized before change state','btn-danger')
-			this.fireEvent(this.ON_ERROR, {reason: 'Please athorize before set state'})
-			return;
-		}
-		var statePacket = new SetStatePacket()
-		statePacket.setState( code )
-		this.send( statePacket )
-	}
-	, onState : function(code){
-		this.fireEvent(this.ON_STATE, {state: code})
-	}
-
-	, onUnknownPacket : function(code){
-		Trace('Unknown packet from client with id '+code, 'btn-danger')
-		this.fireEvent(this.ON_ERROR, {reason: 'Application error. Update your application or contact with your administarator. Unknown packet with id "' + code + '".'})
-	}
-
-	, onError: function(message){
-		this.fireEvent(this.ON_ERROR, {reason: message})
-		this.disconnect( message )
-	}
-	, onWarning: function(message){
-		this.fireEvent(this.ON_WARNING, {reason: message})
-	}
-	, onCallBegin : function(device, number){
-		this.fireEvent(this.ON_CALLBEGIN, {device: device, number: number})
-	}
-	, clearCall: function(){
-		this.send(new CallClearPacket())
-	}
-
-	, setError : function(msg){ this.error = msg }
-	, getError : function(){ return this.error }
-
-	, addEventListener : function(type, callback){
-		if( !this.listeners[type] ) this.listeners[type] = []
-		this.listeners[type][ this.listeners[type].length ] = callback
-	}
-	, fireEvent: function(type, event){
-		event = event || {}
-		if( this.listeners[type] )
-			for (var i in this.listeners[type])
-				if( false === this.listeners[type][i]( event ) )
-					return false
-		return true
-	}
-	, send : function(packet){
-		packet.send(this.socket)
 	}
 }
