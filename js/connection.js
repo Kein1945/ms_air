@@ -102,14 +102,14 @@ var Channel = function(socket, handlers){
 		})
 
 		if( !encoded )
-			throw ["Undefined data for encode", data]
+			throw ["Undefined data for encode", typeof data, data]
 	}
 	this.decode = function(){ // Decode socket received data
 		var decodedData = null
 			, decoded = false
 		handlers.eachHandler.call( this, ConnectHandlers.decoderInterface, function(decoder){
 			decoded = true
-			decodedData = decoder.decode( this.rs() )
+			decodedData = decoder.decode( this )
 		})
 		if(!decoded)
 			throw "Decoders not found in handlers pull"
@@ -125,18 +125,20 @@ Channel.prototype = {
 				break;
 			case "string":
 				this.writeString( data )
+				break;
 			default:
 				this.encode( data )
-				Trace(">> ")
+				Trace("data encoded")
 		}
 	}
 	, writeInt : function(data){
-		Trace("Write int " + data)
 		this.rs().writeInt( parseInt(data) )
+		Trace("Write int " + data)
 	}
 	, writeString : function(data){
 		this.writeInt(data.length)
 		this.rs().writeUTFBytes( data )
+		Trace("Write string " + data)
 	}
 	, readInt : function(){
 		return this.rs().readInt()
