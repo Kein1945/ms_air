@@ -1,3 +1,5 @@
+// Started
+
 var Connection = function(host, port){
 	var self = this
 	this.host = host
