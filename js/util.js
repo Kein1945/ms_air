@@ -12,9 +12,9 @@ CLASS = {
 }
 
 
-var objectOrientedList = function( elements ){
+var extendedObjectArray = function( elements ){
 	var elements = elements || []
-	this.eachHandler = function(type, callback){
+	this.eachInterface = function(type, callback){
 		var found = false
 		for(var k in elements)
 			if(  CLASS.instanceOf( elements[k], type) ) {// object instance of interface
@@ -25,7 +25,8 @@ var objectOrientedList = function( elements ){
 		return found
 	}
 	this.each = function( callback ){
-
+		for(var k in elements)
+			callback
 	}
 	this.push = function( element ){
 		elements.push = element

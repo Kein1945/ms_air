@@ -2,61 +2,26 @@
 <html>
 <head>
   <!-- Framework -->
-        <script type="text/javascript" src="js/AIRAliases.js"></script>
-        <script type="text/javascript" src="js/jquery.js"></script>
-        <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
-        <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="js/AIRAliases.js"></script>
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css"/>
   <!-- END Framework -->
-        <script type="text/javascript" src="js/util.js"></script>
-        <script type="text/javascript" src="js/cil/protocol.js"></script>
-        <script type="text/javascript" src="js/cil/packets.js"></script>
-        <script type="text/javascript" src="js/connection.js"></script>
+    <script type="text/javascript" src="js/util.js"></script>
+    <script type="text/javascript" src="js/nsock.js"></script>
+    <script type="text/javascript" src="js/cl/protocol.js"></script>
+    <script type="text/javascript" src="js/cl/package.js"></script>
+    <script type="text/javascript" src="js/cl/package/service.js"></script>
+    <script type="text/javascript" src="js/cl/package/agent.js"></script>
+    <script type="text/javascript" src="js/cl/package/call.js"></script>
+
+    <script type="text/javascript" src="js/start.js"></script>
   
-        <link rel="stylesheet" type="text/css" href="style.css"/>
+    <link rel="stylesheet" type="text/css" href="style.css"/>
 <title>Mobile secretary</title>
 <!-- this is stable version -->
 </head>
 
 <body>
-<script>
-var result = {
-        connect : false
-        , messageReceived : false
-        , exceptionCaught : false
-}
-
-var c = new Connect( { host: '127.0.0.1', port: 32562}, [{
-        channelConnected : function(ctx){
-                Trace("Connect")
-                ctx.getChannel().write( new HelloPacket() )
-        }
-        , channelDisconnected: function(ctx){
-                for (var k in result )
-                        Trace( k+ " : "+result[k])
-        }
-        , messageReceived : function(packet, ctx){
-                switch(packet.getName()){
-                        case "Hello":
-                                var p = new AuthorizePacket()
-                                p.setLogin('bsalmanov')
-                                p.setPassword('123654')
-                                p.setInstrument('56704')
-                                p.setExtension(5000)
-                                ctx.getChannel().write( p )
-                        break;
-                        case "Authorize":
-                                Trace("Authorized")
-                }
-        }
-        , exceptionCaught: function(e){
-                throw e
-        }
-
-} , 
-new cil_protocol.encoder() , 
-new cil_protocol.decoder()
-])
-c.connect()
-</script>
 </body>
 </html>

@@ -1,31 +1,5 @@
 var incommingCallUrl = 'http://test.plan.dellin.ru/call/incomming.html?number=%number%&device=%device%'
 
-$(function(){
-	/*$('#frame').attr('src','http://localhost:8080').load(function(){
-		console.log($('#frame').contents().find('body').html());
-	})*/
-	/*var c = new Connection()
-	$('#state').click(function(){
-		if( $(this).hasClass('state_offline') ) {
-			c.setLogin('bsalmanov')
-			c.setPassword('123654')
-			c.setInstrument('56704')
-			c.setExtension('55555')
-			c.connect('localhost', 8080)
-			c.onConnectedListener(function(){
-				if(this.isAuthorized()){
-					$('#state').html('Authorized').addClass('state_online');
-					State.setReady()
-				} else {
-					$('#state').html('Authorization fail').addClass('state_disconnected');
-					State.setDisconnected()
-				}
-			})
-		}
-	})*/
-	
-})
-
 function Quit() {
     var event = new air.Event(air.Event.EXITING, false, true);
     air.NativeApplication.nativeApplication.dispatchEvent(event);
