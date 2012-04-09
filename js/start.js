@@ -8,16 +8,12 @@ $(function(){
     var nsockHandler = {
             channelConnected : function(ctx){
                 Trace("Connect")
-                ctx.getChannel().write( new cl.package.hello.instance() )
-            }
-            , channelDisconnected: function(ctx){
-                for (var k in result )
-                    Trace( k+ " : "+result[k])
+                ctx.getChannel().write( new (cl.package.hello.instance)() )
             }
             , messageReceived : function(package, ctx){
                 switch(package.getID()){
                     case cl.helpers.package.service.hello.id:
-                            var p = new cl.package.authorize.instance()
+                            var p = new (cl.package.authorize.instance)()
                             p.login = 'bsalmanov'
                             p.password = '123654'
                             p.instrument = '56704'
@@ -34,10 +30,13 @@ $(function(){
             , exceptionCaught: function(e){
                 throw e
             }
+            , channelDisconnected: function(ctx){
+                Trace("Disconnected from server")
+            }
         } 
 
     var c = new nsock( { host: '127.0.0.1', port: 32562}, [
-       
+    	nsockHandler
         , new (cl.handlers.encoder)()
         , new (cl.handlers.decoder)()
     ])

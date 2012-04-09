@@ -1,12 +1,15 @@
 cl.package.hello = cl.helpers.createPackagePrototype( cl.helpers.package.service.hello, {
     send: function(channel) {
-    	c.write( cl.helpers.package.version )
+    	channel.write( cl.helpers.package.version )
     }
 })
 
 cl.package.buttonmask = cl.helpers.createPackagePrototype( cl.helpers.package.service.buttonmask, {
     get: function(channel) {
-    	
+    	this.mask = channel.readInt()
+    }
+    , getInfo: function(){
+    	return this.getLabel() + '\t' + this.mask
     }
 });
 

@@ -25,8 +25,8 @@ cl.handlers = {
 		this.encode = function(package, channel){
 			if( !CLASS.instanceOf( package, cl.interface.package ) )
 				return package
-			channel.writeInt( package.getId() )
-			data.send( channel )
+			channel.writeInt( package.getID() )
+			package.send( channel )
 			channel.rs().flush()
 			Trace( package.getInfo() )
 		}
@@ -77,7 +77,8 @@ cl.helpers = {
 
 		for ( name in methods )
 			packagePrototype.prototype[name] = methods[name]
-
+		if ( "undefined" == typeof( packagePrototype.prototype.get ) ) packagePrototype.prototype.get = function(){ }//throw "Package "+packageName+" should implement method get"}
+		if ( "undefined" == typeof( packagePrototype.prototype.send ) ) packagePrototype.prototype.send = function(){}// throw "Package "+packageName+" should implement method send"}
 		return {
 			id: packageID
 			, name: packageName

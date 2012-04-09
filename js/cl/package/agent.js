@@ -12,7 +12,7 @@ cl.package.authorize = cl.helpers.createPackagePrototype( cl.helpers.package.age
     , getInfo: function(){
         return this.getLabel() +
 	        ( 'undefined' == typeof(this.code)
-	        	? (this.login /*+ ':' + this.password + '@'*/ + this.instrument + '/' + this.extension)
+	        	? (this.login /*+ ':' + this.password +*/ + '@' + this.instrument + '/' + this.extension)
 	            : ('[' + this.code + '] ' + this.message)
 	        )
     }

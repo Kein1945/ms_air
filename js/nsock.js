@@ -32,7 +32,8 @@ var nsock = (function(){
 		this.rs = this.getRawSocket //alias
 		this.encode = function(data){ // Encode data for writing to socket
 			var encoded = false
-			handlers.eachHandler.call( this, ConnectHandlers.encoderInterface, function(encoder){
+			handlers.eachInterface.call( this, nsock.interface.encoder, function(encoder){
+				Trace('Wa!')
 				if( null == encoder.encode( data, this ) )
 					return !( encoded = true )
 			})
@@ -43,7 +44,7 @@ var nsock = (function(){
 		this.decode = function(){ // Decode socket received data
 			var decodedData = null
 				, decoded = false
-			handlers.eachHandler.call( this, ConnectHandlers.decoderInterface, function(decoder){
+			handlers.eachInterface.call( this, nsock.interface.decoder, function(decoder){
 				decoded = true
 				decodedData = decoder.decode( this )
 			})
@@ -59,6 +60,7 @@ var nsock = (function(){
 		 * If fail to define type, trying to encode data
 		 */
 		write : function(data){
+			Trace(["Writing data", data])
 			switch( typeof(data) ){
 				case "number":
 					this.writeInt( data )
@@ -68,6 +70,7 @@ var nsock = (function(){
 					break;
 				default:
 					this.encode( data )
+					Trace("Data encoded")
 			}
 		}
 		, writeInt : function(data){
@@ -109,19 +112,19 @@ var nsock = (function(){
 		this.eachHandler = function(callback){
 			handlers.eachInterface.call( this, nsock.interface.handler, callback)
 		}
+		this.connect = function(){
+			this.flushSocket()
+			channel = new Channel(socket, handlers)
+			Trace("Chanel created")
+			socket.connect( server.host, server.port)
+			this.initListeners()
+			Trace("Connect complete")
+		}
 	}
 
 	Connect.prototype = {
 		isActive : function(){
 			return this.sock().connected
-		}
-		, connect: function(){
-			this.flushSocket()
-			this.channel = new Channel(this.sock(), this.handlers)
-			Trace("Chanel created")
-			this.sock().connect(this.getHost(), this.getPort())
-			this.initListeners()
-			Trace("Connect complete")
 		}
 		, close: function(){
 			this.flushSocket()
