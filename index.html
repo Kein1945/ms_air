@@ -8,9 +8,14 @@
         <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css"/>
   <!-- END Framework -->
         <script type="text/javascript" src="js/state.js"></script>
-        <script type="text/javascript" src="js/connection.js"></script>
-        <script type="text/javascript" src="js/packetmanager.js"></script>
-        <script type="text/javascript" src="js/packets.js"></script>
+        <script type="text/javascript" src="js/util.js"></script>
+        <script type="text/javascript" src="js/nsock.js"></script>
+        <script type="text/javascript" src="js/cl/protocol.js"></script>
+        <script type="text/javascript" src="js/cl/package.js"></script>
+        <script type="text/javascript" src="js/cl/package/service.js"></script>
+        <script type="text/javascript" src="js/cl/package/agent.js"></script>
+        <script type="text/javascript" src="js/cl/package/call.js"></script>
+        <script type="text/javascript" src="js/ui.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
   
         <link rel="stylesheet" type="text/css" href="style.css"/>
@@ -22,19 +27,19 @@
   <section>
   <a href="#" class="options_label" onclick="ui.showOptionsScreen()"><i class="icon-cog"></i><span>Bsalmanov/56704</span></a>
   </section><section>
-                            <div class="btn-group" id="state">
-                              <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                                <i class="icon-off"></i><span class="ilabel">Не в сети</span>
-                                <span class="caret pull-right"></span>
-                              </a>
-                              <ul class="dropdown-menu">
-                                <li><a href="#" id="state_online" title="Connect"><i class="icon-ok-circle"></i> Online</a></li>
-                                <li><a href="#" id="state_online" title="Connect"><i class="icon-time"></i> Busy</a></li>
-                                <li class="divider"></li>
-                                <li class="active"><a href="#" id="state_online" title="Connect"><i class="icon-off"></i> Offline</a></li>
-                              </ul>
+            <div class="btn-group" id="state">
+              <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                <i class="icon-off"></i><span class="ilabel">Не в сети</span>
+                <span class="caret pull-right"></span>
+              </a>
+              <ul class="dropdown-menu">
+                <li><a href="#" id="state_online" title="Connect"><i class="icon-ok-circle"></i> Online</a></li>
+                <li><a href="#" id="state_online" title="Connect"><i class="icon-time"></i> Busy</a></li>
+                <li class="divider"></li>
+                <li class="active"><a href="#" id="state_online" title="Connect"><i class="icon-off"></i> Offline</a></li>
+              </ul>
 
-                            </div>
+            </div>
   </section>
   <div id="content">
   <!-- Call number area -->

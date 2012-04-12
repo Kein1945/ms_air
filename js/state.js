@@ -209,7 +209,7 @@
 
 		,setReserved : function(){
 			this.setIndicator('reserved')
-			this.setAvaliableState('none', ['answer', 'reject'] )
+			this.setAvaliableState('none', ['answer'])//, 'reject'] )
 			//this.startTimer('badge-info')
 			this.disable()
 

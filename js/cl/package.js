@@ -18,9 +18,10 @@ cl.helpers.package = {
     }
     , call: {
         begin: { id: 201, name: 'Call begin' }
+        , established: { id: 206, name: 'Call established' }
 
         , answer: { id: 202, name: 'Call answer' }
-        , reject: { id: 203, name: 'Call reject' }
+        , release: { id: 203, name: 'Call release' }
 
         , hold: { id: 204, name: 'Call hold' }
         , unhold: { id: 205, name: 'Call unhold' }

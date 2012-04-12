@@ -7,13 +7,14 @@ cl.package.call.begin = cl.helpers.createPackagePrototype( cl.helpers.package.ca
 	}
 	, getInfo: function(){
 		return this.getLabel() + ' ['
-					+ this.getNumber()
+					+ this.number
 					+ ']'
 	}
 })
+cl.package.call.reject = cl.helpers.createPackagePrototype( cl.helpers.package.call.established )
 
 cl.package.call.answer = cl.helpers.createPackagePrototype( cl.helpers.package.call.answer )
-cl.package.call.reject = cl.helpers.createPackagePrototype( cl.helpers.package.call.reject )
+cl.package.call.release = cl.helpers.createPackagePrototype( cl.helpers.package.call.release )
 
 cl.package.call.hold = cl.helpers.createPackagePrototype( cl.helpers.package.call.hold )
 cl.package.call.unhold = cl.helpers.createPackagePrototype( cl.helpers.package.call.unhold )

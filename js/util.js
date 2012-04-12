@@ -3,7 +3,7 @@ CLASS = {
 	instanceOf: function(theObject, theInterface){
 		for (var member in theInterface){
 			if ( typeof theObject[member] != typeof theInterface[member] ) {
-				Trace( ["Object required implement interface method \""+member+"\"", theObject] )
+				//Trace( ["Object required implement interface method \""+member+"\"", theObject] )
 				return false
 			}
 		}

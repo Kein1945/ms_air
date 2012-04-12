@@ -17,6 +17,9 @@ cl.state = {
 			if( searchID == cl.state[i].id )
 				return cl.state[i]
 	}
+	, byName: function( state ){
+		return cl.state[state]
+	}
 }
 
 cl.handlers = {

@@ -15,7 +15,7 @@
     <script type="text/javascript" src="js/cl/package/agent.js"></script>
     <script type="text/javascript" src="js/cl/package/call.js"></script>
 
-    <script type="text/javascript" src="js/start.js"></script>
+    <script type="text/javascript" src="js/test.js"></script>
   
     <link rel="stylesheet" type="text/css" href="style.css"/>
 <title>Mobile secretary</title>
@@ -23,5 +23,40 @@
 </head>
 
 <body>
+    <style>
+    #btn label {
+        padding-left: 20px;
+    }
+#btn label, #btn input {
+    float:left;
+}
+#btn li {
+    clear:both;
+}
+#btn {
+    list-style:none;
+}
+    </style>
+<ul id="btn">
+<li><input type='checkbox' id='enable_answer'/><label>answer</label></li>
+<li><input type='checkbox' id='enable_clear'/><label>clear</label></li>
+<li><input type='checkbox' id='enable_conference_complete'/><label>conference_complete</label></li>
+<li><input type='checkbox' id='enable_conference_init'/><label>conference_init</label></li>
+<li><input type='checkbox' id='enable_hold'/><label>hold</label></li>
+<li><input type='checkbox' id='enable_login'/><label>login</label></li>
+<li><input type='checkbox' id='enable_logout'/><label>logout</label></li>
+<li><input type='checkbox' id='enable_logout_with_reason'/><label>logout_with_reason</label></li>
+<li><input type='checkbox' id='enable_makecall'/><label>makecall</label></li>
+<li><input type='checkbox' id='enable_notready'/><label>notready</label></li>
+<li><input type='checkbox' id='enable_notready_with_reason'/><label>notready_with_reason</label></li>
+<li><input type='checkbox' id='enable_ready'/><label>ready</label></li>
+<li><input type='checkbox' id='enable_release'/><label>release</label></li>
+<li><input type='checkbox' id='enable_retrieve'/><label>retrieve</label></li>
+<li><input type='checkbox' id='enable_single_step_transfer'/><label>single_step_transfer</label></li>
+<li><input type='checkbox' id='enable_single_step_conference'/><label>single_step_conference</label></li>
+<li><input type='checkbox' id='enable_transfer_complete'/><label>transfer_complete</label></li>
+<li><input type='checkbox' id='enable_transfer_init'/><label>transfer_init</label></li>
+</ul>
+
 </body>
 </html>

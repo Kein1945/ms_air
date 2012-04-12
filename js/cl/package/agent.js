@@ -5,9 +5,12 @@ cl.package.authorize = cl.helpers.createPackagePrototype( cl.helpers.package.age
         channel.write( this.instrument )
         channel.write( this.extension )
     }
-    , get : function(channel){
+    , get: function(channel){
         this.code = channel.readInt()
         this.message = channel.readString()
+    }
+    , isSuccessful: function(){
+    	return this.code == 1
     }
     , getInfo: function(){
         return this.getLabel() +
