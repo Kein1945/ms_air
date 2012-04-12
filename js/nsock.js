@@ -16,7 +16,7 @@
 var connect = new nsock( {host: host, port: port}, [
 	new (nsock.interface.encoder) MyDataEncoder()
 	// ... any encoders you need
-	, new (nsock.interface.decoder) MyDataEncoder()
+	, new (nsock.interface.decoder) MyDataDecoder()
 	, MyMessageHandler
 	// nsock.interface.handler
 	// ... any handlers you need
@@ -41,12 +41,12 @@ var nsock = (function(){
 				throw ["Undefined data for encode or encoders not found", typeof data, data]
 		}
 		this.decode = function(){ // Decode socket received data
-			var decodedData = null
+			var decodedData = []
 				, decoded = false
 			while(this.rs().bytesAvailable > 0)
 				handlers.eachInterface.call( this, nsock.interface.decoder, function(decoder){
 					decoded = true
-					decodedData = decoder.decode( this )
+					decodedData.push( decoder.decode( this ) )
 				})
 			if(!decoded)
 				throw "Decoders not found in handlers pull"
@@ -143,7 +143,10 @@ var nsock = (function(){
 			})
 			this.sock().addEventListener( air.ProgressEvent.SOCKET_DATA, function(){
 				connect.eachHandler( function(handler){
-					handler.messageReceived( this.getChannel().decode(), this )
+					var packetsReceived = this.getChannel().decode()
+					for(var k in packetsReceived){
+						handler.messageReceived( packetsReceived[k], this )	
+					}
 				})
 			})
 			this.sock().addEventListener( air.IOErrorEvent.IO_ERROR, function( exception ){
