@@ -33,7 +33,6 @@ var nsock = (function(){
 		this.encode = function(data){ // Encode data for writing to socket
 			var encoded = false
 			handlers.eachInterface.call( this, nsock.interface.encoder, function(encoder){
-				Trace('Wa!')
 				if( null == encoder.encode( data, this ) )
 					return !( encoded = true )
 			})
@@ -44,10 +43,11 @@ var nsock = (function(){
 		this.decode = function(){ // Decode socket received data
 			var decodedData = null
 				, decoded = false
-			handlers.eachInterface.call( this, nsock.interface.decoder, function(decoder){
-				decoded = true
-				decodedData = decoder.decode( this )
-			})
+			while(this.rs().bytesAvailable > 0)
+				handlers.eachInterface.call( this, nsock.interface.decoder, function(decoder){
+					decoded = true
+					decodedData = decoder.decode( this )
+				})
 			if(!decoded)
 				throw "Decoders not found in handlers pull"
 			return decodedData
@@ -60,7 +60,7 @@ var nsock = (function(){
 		 * If fail to define type, trying to encode data
 		 */
 		write : function(data){
-			Trace(["Writing data", data])
+
 			switch( typeof(data) ){
 				case "number":
 					this.writeInt( data )
@@ -70,7 +70,6 @@ var nsock = (function(){
 					break;
 				default:
 					this.encode( data )
-					Trace("Data encoded")
 			}
 		}
 		, writeInt : function(data){
