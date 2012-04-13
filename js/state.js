@@ -16,19 +16,7 @@
 		var self = this
 		this.options = {}
 		this.options.items = {
-			offline: { // Availiable for switch
-				label: { short: 'Отключиться', normal: 'Не в сети' }
-				, icon : 'icon-off'
-				, colorClass : ''
-				, listenEventClass: 'set-state-offline'
-			}
-			, disconnected: {
-				label: { short: '', normal: 'Отключен' }
-				, icon : 'icon-exclamation-sign icon-white'
-				, colorClass : 'btn-danger'
-				, listenEventClass: ''
-			}
-			, connect: {
+			connect: {
 				label: { short: 'Подключиться', normal: '' }
 				, icon : 'icon-share', colorClass : '', listenEventClass: 'set-state-connect'
 			}
@@ -50,17 +38,17 @@
 				, colorClass : 'btn-info'
 				, listenEventClass: ''
 			}
-			, reject: { // Availiable for switch
-				label: { short: 'Отклонить', normal: '' }
-				, icon : 'icon-minus'
-				, colorClass : ''
-				, listenEventClass: 'set-state-reject'
-			}
 			, answer: { // Availiable for switch
 				label: { short: 'Ответить', normal: '' }
 				, icon : 'icon-share-alt'
 				, colorClass : ''
 				, listenEventClass: 'set-state-answer'
+			}
+			, reject: { // Availiable for switch
+				label: { short: 'Отклонить', normal: '' }
+				, icon : 'icon-minus'
+				, colorClass : ''
+				, listenEventClass: 'set-state-reject'
 			}
 			, talking: {
 				label: { short: '', normal: 'Разговор (<strong>%s%</strong>)' }
@@ -97,6 +85,18 @@
 				, colorClass : ''
 				, listenEventClass: 'set-state-unhold'
 			}
+			, disconnected: {
+				label: { short: '', normal: 'Отключен' }
+				, icon : 'icon-exclamation-sign icon-white'
+				, colorClass : 'btn-danger'
+				, listenEventClass: ''
+			}
+			, offline: { // Availiable for switch
+				label: { short: 'Отключиться', normal: 'Не в сети' }
+				, icon : 'icon-off'
+				, colorClass : ''
+				, listenEventClass: 'set-state-offline'
+			}
 		}
 		this.options.ctiState = {
 			login : { label: 'Login?', id: 0, name: 'login' }
@@ -118,8 +118,6 @@
 				, icon: this.div.find('a.btn i')
 			}
 		this.stateMenu = this.div.find('ul.dropdown-menu')
-		this.infoLabel = $('#info')
-
 		// Events
 		this.listeners = {}
 		this.ON_OFFLINE = 1
@@ -184,6 +182,27 @@
 				
 			}
 		}
+		, setButtonsMask: function(mask){
+			// For future use
+			/*ENABLE_ANSWER = 1
+            ENABLE_CLEAR = 16
+            ENABLE_CONFERENCE_COMPLETE = 512
+            ENABLE_CONFERENCE_INIT = 256
+            ENABLE_HOLD =  4
+            ENABLE_LOGIN = 16777216
+            ENABLE_LOGOUT = 33554432
+            ENABLE_LOGOUT_WITH_REASON = 67108864
+            ENABLE_MAKECALL = 16
+            ENABLE_NOTREADY = 268435456
+            ENABLE_NOTREADY_WITH_REASON = 536870912
+            ENABLE_READY = 134217728
+            ENABLE_RELEASE = 2
+            ENABLE_RETRIEVE = 8
+            ENABLE_SINGLE_STEP_TRANSFER = 128
+            ENABLE_SINGLE_STEP_CONFERENCE = 1024
+            ENABLE_TRANSFER_COMPLETE = 64
+            ENABLE_TRANSFER_INIT = 32*/
+		}
 
 		/* Логика для каждого события */
 		, setOffline : function(){
@@ -208,6 +227,7 @@
 		}
 
 		,setReserved : function(){
+			Trace("Wft!")
 			this.setIndicator('reserved')
 			this.setAvaliableState('none', ['answer'])//, 'reject'] )
 			//this.startTimer('badge-info')
@@ -222,7 +242,7 @@
 		}
 		, setHold : function(){
 			this.setIndicator('hold')
-			this.setAvaliableState('none', ['unhold', 'reject'] )
+			this.setAvaliableState('none', ['unhold'])//, 'reject'] )
 			//this.startTimer('badge-info')
 			this.disable()
 
@@ -230,7 +250,6 @@
 		, setDisconnected : function(reason){
 			this.setIndicator('disconnected')
 			this.setAvaliableState('offline', ['connect', '|', 'offline'] )
-			this.setInfo(reason, 'badge-error')
 			this.enable()
 		}
 
@@ -238,7 +257,6 @@
 			this.disable()
 			this.setIndicator('wait')
 			this.setAvaliableState('wait', [] )
-			this.setInfo(reason, 'badge-info')
 		}
 
 		, disable : function(){
@@ -247,15 +265,7 @@
 		, enable : function(){
 			this.indicator.button.removeClass('disabled')
 		}
-
-		, setInfo : function(text, className){
-			this.stopTimer()
-			className = className || 'badge-inverse'
-			this.infoLabel.removeClass().addClass('badge '+className)
-			this.infoLabel.html(text)
-		}
 		, startTimer : function(className){
-			this.infoLabel.removeClass().addClass('badge '+ (className || 'badge-inverse'))
 			var currentTimer = this.currentTimer = (new Date()).getTime()
 				, self = this
 				, second = 0;
@@ -263,7 +273,6 @@
 				if (self.currentTimer != currentTimer) return
 				setTimeout(arguments.callee, 1000)
 				self.indicator.label.html( self.getItemConf( self.currentState ).label.normal.replace('%s%', Math.floor( second++ / 60) + ':' + ( second % 60 )) )
-				//self.infoLabel.html( Math.floor( second++ / 60) + ':' + ( second % 60 ) )
 			})()
 		}
 		, stopTimer : function(){
@@ -296,7 +305,7 @@
 			State.fireEvent(State.ON_BUSY)
 		})
 		$('a.set-state-stop').live('click', function(){
-			State.fireEvent(State.ON_STOP)
+			State.fireEvent(State.ON_REJECT)
 		})
 		$('a.set-state-connect').live('click', function(){
 			State.fireEvent(State.ON_CONNECT)
